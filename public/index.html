@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>账单笔记 - 共享记账系统</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="root">
+        <div class="app-container">
+            <!-- 登录页面 -->
+            <div id="login-screen" class="screen active">
+                <div class="login-form">
+                    <h1>账单笔记</h1>
+                    <h2>登录</h2>
+                    <form id="login-form">
+                        <div class="form-group">
+                            <label for="username">用户名：</label>
+                            <input type="text" id="username" name="username" required placeholder="请输入用户名">
+                        </div>
+                        <div class="form-group">
+                            <label for="password">密码：</label>
+                            <input type="password" id="password" name="password" required placeholder="请输入密码">
+                        </div>
+                        <button type="submit" class="btn-primary">登录</button>
+                    </form>
+                    <div id="login-error" class="error-message"></div>
+                </div>
+            </div>
+
+            <!-- 仪表盘页面 -->
+            <div id="dashboard-screen" class="screen">
+                <header class="app-header">
+                    <h1>账单笔记</h1>
+                    <div class="user-info">
+                        <span id="user-name">加载中...</span>
+                        <button id="logout-btn" class="btn-secondary">退出登录</button>
+                    </div>
+                </header>
+                
+                <main class="dashboard-content">
+                    <div class="dashboard-grid">
+                        <div class="card balance-card">
+                            <h3 id="balance-title">我的余额</h3>
+                            <div id="user-balance-info">
+                                <p>总收入：<span id="total-income">¥0.00</span></p>
+                                <p>总支出：<span id="total-expense">¥0.00</span></p>
+                                <p>净余额：<span id="net-balance">¥0.00</span></p>
+                            </div>
+                        </div>
+                        
+                        <div id="admin-controls" class="card admin-controls" style="display: none;">
+                            <h3>管理员功能</h3>
+                            <button id="show-add-transaction" class="btn-primary">添加交易</button>
+                            <button id="show-users" class="btn-secondary">用户管理</button>
+                            <button id="show-user-balances" class="btn-secondary">用户余额</button>
+                        </div>
+                        
+                        <div class="card transaction-history">
+                            <h3>最近交易</h3>
+                            <div id="recent-transactions">
+                                <p>加载交易记录中...</p>
+                            </div>
+                            <button id="view-all-transactions" class="btn-secondary">查看全部交易</button>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>个人设置</h3>
+                            <button id="show-profile" class="btn-secondary">修改个人信息</button>
+                        </div>
+                    </div>
+                </main>
+            </div>
+
+            <!-- 添加交易页面 -->
+            <div id="add-transaction-screen" class="screen">
+                <header class="app-header">
+                    <h1>添加交易</h1>
+                    <button id="back-to-dashboard" class="btn-secondary">返回仪表盘</button>
+                </header>
+                
+                <main class="form-content">
+                    <form id="add-transaction-form">
+                        <div class="form-group">
+                            <label for="transaction-type">类型：</label>
+                            <select id="transaction-type" name="type" required>
+                                <option value="income">收入</option>
+                                <option value="expense">支出</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transaction-amount">金额（元）：</label>
+                            <input type="number" id="transaction-amount" name="amount" step="0.01" min="0.01" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transaction-description">描述：</label>
+                            <input type="text" id="transaction-description" name="description" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="transaction-date">日期：</label>
+                            <input type="date" id="transaction-date" name="date" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>参与者：</label>
+                            <div id="participants-container">
+                            </div>
+                            <button type="button" id="add-participant-btn" class="btn-secondary">添加参与者</button>
+                            <button type="button" id="select-all-participants-btn" class="btn-secondary">选择全部成员</button>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn-primary">添加交易</button>
+                        </div>
+                    </form>
+                    
+                    <div id="transaction-error" class="error-message"></div>
+                </main>
+            </div>
+
+            <!-- 查看交易页面 -->
+            <div id="view-transactions-screen" class="screen">
+                <header class="app-header">
+                    <h1>全部交易</h1>
+                    <button id="back-to-dashboard-2" class="btn-secondary">返回仪表盘</button>
+                </header>
+                
+                <main class="transactions-content">
+                    <div id="all-transactions">
+                        <p>加载全部交易中...</p>
+                    </div>
+                </main>
+            </div>
+
+            <!-- 用户管理页面 -->
+            <div id="users-screen" class="screen">
+                <header class="app-header">
+                    <h1>用户管理</h1>
+                    <button id="back-to-dashboard-3" class="btn-secondary">返回仪表盘</button>
+                </header>
+                
+                <main class="users-content">
+                    <div style="margin-bottom: 20px;">
+                        <button id="add-user-btn" class="btn-primary">+ 新增用户</button>
+                    </div>
+                    <div id="all-users">
+                        <p>加载用户中...</p>
+                    </div>
+                </main>
+            </div>
+
+            <!-- 用户余额页面 -->
+            <div id="user-balances-screen" class="screen">
+                <header class="app-header">
+                    <h1>用户余额</h1>
+                    <button id="back-to-dashboard-5" class="btn-secondary">返回仪表盘</button>
+                </header>
+                
+                <main class="users-content">
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3>筛选条件</h3>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="balance-user-filter">按姓名筛选：</label>
+                                <select id="balance-user-filter">
+                                    <option value="">全部用户</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="balance-start-date">开始日期：</label>
+                                <input type="date" id="balance-start-date">
+                            </div>
+                            <div class="form-group" style="margin-bottom: 0;">
+                                <label for="balance-end-date">结束日期：</label>
+                                <input type="date" id="balance-end-date">
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; display: flex; gap: 10px;">
+                            <button id="refresh-balances" class="btn-primary">查询</button>
+                            <button id="export-balances" class="btn-secondary">导出CSV</button>
+                        </div>
+                    </div>
+                    <div id="user-balances-container">
+                        <p>加载中...</p>
+                    </div>
+                </main>
+            </div>
+
+            <!-- 个人设置页面 -->
+            <div id="profile-screen" class="screen">
+                <header class="app-header">
+                    <h1>个人设置</h1>
+                    <button id="back-to-dashboard-4" class="btn-secondary">返回仪表盘</button>
+                </header>
+                
+                <main class="form-content">
+                    <form id="profile-form">
+                        <div class="form-group">
+                            <label for="profile-name">姓名：</label>
+                            <input type="text" id="profile-name" name="name" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="profile-username">用户名：</label>
+                            <input type="text" id="profile-username" name="username" required>
+                            <small>用于登录</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn-primary">保存修改</button>
+                        </div>
+                    </form>
+                    
+                    <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+                    
+                    <h3>修改密码</h3>
+                    <form id="password-form">
+                        <div class="form-group">
+                            <label for="current-password">当前密码：</label>
+                            <input type="password" id="current-password" name="currentPassword" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="new-password">新密码：</label>
+                            <input type="password" id="new-password" name="newPassword" required minlength="6">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="confirm-password">确认新密码：</label>
+                            <input type="password" id="confirm-password" name="confirmPassword" required minlength="6">
+                        </div>
+                        
+                        <div class="form-group">
+                            <button type="submit" class="btn-primary">修改密码</button>
+                        </div>
+                    </form>
+                    
+                    <div id="profile-error" class="error-message"></div>
+                    <div id="profile-success" class="success-message"></div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增用户模态框 -->
+    <div id="add-user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>新增用户</h2>
+                <span class="modal-close" onclick="closeModal('add-user-modal')">&times;</span>
+            </div>
+            <form id="add-user-form">
+                <div class="form-group">
+                    <label for="add-user-name">姓名：</label>
+                    <input type="text" id="add-user-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="add-user-username">用户名：</label>
+                    <input type="text" id="add-user-username" name="username" required>
+                    <small>用于登录</small>
+                </div>
+                <div class="form-group">
+                    <label for="add-user-password">初始密码：</label>
+                    <input type="password" id="add-user-password" name="password" required minlength="6">
+                    <small>至少6位</small>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-primary">创建用户</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('add-user-modal')">取消</button>
+                </div>
+            </form>
+            <div id="add-user-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- 编辑用户模态框 -->
+    <div id="edit-user-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>编辑用户</h2>
+                <span class="modal-close" onclick="closeModal('edit-user-modal')">&times;</span>
+            </div>
+            <form id="edit-user-form">
+                <input type="hidden" id="edit-user-id" name="id">
+                <div class="form-group">
+                    <label>ID：</label>
+                    <input type="text" id="edit-user-id-display" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="edit-user-name">姓名：</label>
+                    <input type="text" id="edit-user-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="edit-user-username">用户名：</label>
+                    <input type="text" id="edit-user-username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label>角色：</label>
+                    <input type="text" id="edit-user-role" readonly>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-primary">保存修改</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('edit-user-modal')">取消</button>
+                </div>
+            </form>
+            <div id="edit-user-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <!-- 重置密码模态框 -->
+    <div id="reset-password-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>重置密码</h2>
+                <span class="modal-close" onclick="closeModal('reset-password-modal')">&times;</span>
+            </div>
+            <form id="reset-password-form">
+                <input type="hidden" id="reset-password-user-id" name="id">
+                <div class="form-group">
+                    <label>用户：</label>
+                    <input type="text" id="reset-password-user-name" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="reset-password-new">新密码：</label>
+                    <input type="password" id="reset-password-new" name="newPassword" required minlength="6">
+                    <small>至少6位</small>
+                </div>
+                <div class="form-group">
+                    <label for="reset-password-confirm">确认新密码：</label>
+                    <input type="password" id="reset-password-confirm" name="confirmPassword" required minlength="6">
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn-primary">重置密码</button>
+                    <button type="button" class="btn-secondary" onclick="closeModal('reset-password-modal')">取消</button>
+                </div>
+            </form>
+            <div id="reset-password-error" class="error-message"></div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
