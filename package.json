@@ -1,0 +1,25 @@
+{
+  "name": "billnote",
+  "version": "1.0.0",
+  "description": "A shared accounting system for groups",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node start.js",
+    "dev": "nodemon start.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "sqlite3": "^5.1.6",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express-rate-limit": "^6.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["accounting", "finance", "shared", "budget"],
+  "author": "BillNote Team",
+  "license": "MIT"
+}
